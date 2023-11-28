@@ -1,3 +1,13 @@
+sub create_3_qubits
+
+    increment i to 3
+
+        qubit -> array_qubits.[i]
+
+    next
+
+endsub
+
 sub first
 
     j = 2
