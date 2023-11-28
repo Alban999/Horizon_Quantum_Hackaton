@@ -5,6 +5,13 @@ x {
     kraus: [0 1; 1 0]
 }
 
+x {
+    dim_in: 2 2 2 2 2 2 
+    dim_out: 2
+
+    kraus: [0 1; 1 0]
+}
+
 cnot {
     dim_in: 2 2
     dim_out: 2 2

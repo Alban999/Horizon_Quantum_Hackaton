@@ -8,6 +8,13 @@ sub create_3_qubits
 
 endsub
 
+sub psi_def
+
+    int myNumbers[] = {1, 0, 0, 0};
+
+
+endsub
+
 sub first
 
     j = 2
