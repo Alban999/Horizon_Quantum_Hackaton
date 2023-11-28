@@ -1,0 +1,12 @@
+
+sub first
+
+    j = 2
+
+    increment j to n
+
+        cnot[array_qubits.[1], array_qubits.[j]]
+
+    next
+
+endsub
