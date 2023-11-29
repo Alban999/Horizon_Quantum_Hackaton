@@ -36,39 +36,17 @@ sub bitFLipless_gate
         cnot[in.[q_i], in.[q_j]]
         cnot[in.[q_i_1], in.[q_j_1]]
         cnot[in.[q_i_2], in.[q_j_2]]
-        in.[q_j] -> _input.[1]
     end
-    in.[q_i] -> _input.[0]
     
     # Noise
-    maybe_flip(flipping_probability)[_input.[0]]
+    maybe_flip(flipping_probability)[in.[q_i]]
+    maybe_flip(flipping_probability)[in.[q_i_1]]
+    maybe_flip(flipping_probability)[in.[q_i_2]]
     
-    # Copy the output of U the first copy and apply U to the second copy
-    _output.[0] -> in.[q_i]
     if is_cnot
-        _output.[1] -> in.[q_j]
-        in.[q_j_1] -> _input.[1]
-    end
-    in.[q_i_1] -> _input.[0]
-    
-    # Noise
-    maybe_flip(flipping_probability)[_input.[0]]
-    
-    # Copy the output of U the second copy and apply U to the third copy
-    _output.[0] -> out.[q_i_1]
-    if is_cnot
-        _output.[1] -> out.[q_j_1]
-        in.[q_j_2] -> _input.[1]
-    end
-    in.[q_i_2] -> _input.[0]
-
-    # Noise
-    maybe_flip(flipping_probability)[_input.[0]]
-    
-    # Copy the output of U the third copy
-    _output.[0] -> out.[q_i_1]
-    if is_cnot
-        _output.[1] -> out.[q_j_1]
+         maybe_flip(flipping_probability)[in.[q_j]]
+        maybe_flip(flipping_probability)[in.[q_j_1]]
+        maybe_flip(flipping_probability)[in.[q_j_2]]
     end
     
     # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
