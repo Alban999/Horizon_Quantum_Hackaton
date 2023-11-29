@@ -1,0 +1,45 @@
+sub logical_x
+    increment i to n_log
+        if logical_index1 == i
+        qubit_array.[n_phys_per_log*logical_index1 + i-1] -> qubit_reg.[i]
+        x[qubit_reg.[i]]
+        end
+    next
+endsub
+
+sub logical_z
+    increment i to n_log
+        if logical_index1 == i
+        qubit_array.[n_phys_per_log*logical_index1 + i-1] -> qubit_reg.[i]
+        z[qubit_reg.[i]]
+        end
+    next
+endsub
+
+sub logical_h
+    increment i to n_log
+        if logical_index1 == i
+        qubit_array[n_phys_per_log*logical_index1 + i-1] -> qubit_reg.[i]
+        h[qubit_reg.[i]]
+        end
+    next
+endsub
+
+sub logical_y
+    increment i to n_log
+        if logical_index1 == i
+        qubit_array.[n_phys_per_log*logical_index1 + i-1] -> qubit_reg.[i]
+        y[qubit_reg.[i]]
+        end
+    next
+endsub
+
+sub logical_cx
+# TODO: Implement real logical CX
+increment i to 5
+    if logical_index1 == i
+    qubit_array.[n_phys_per_log*logical_index1 + i-1] = qubit_reg[i]
+    cnot[qubit_reg.[i]]
+    end
+next
+end sub
