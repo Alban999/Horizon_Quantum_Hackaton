@@ -1,0 +1,28 @@
+# This is your source file. You'll need a main.qhe file for us to compile your code. 
+include constants.qh
+include bitflip_protocol.qhe
+
+# Define the initial psi state
+increment i to num_qubits
+    qubit -> in.[i]
+next
+
+# Copy psi to the 2 ancillary registers
+increment i to num_qubits
+    i-1 -> i0
+    i+num_qubits-1 -> i1
+    i+2*num_qubits-1 -> i2
+    cnot[in.[i0], in.[i1]]
+    cnot[in.[i0], in.[i2]]
+next
+
+increment j to num_operations
+    j -1 -> i
+    ops.[i] -> op
+    q_is.[i] -> q_i
+    4 - op -> is_single
+    if ~is_single
+        q_js.[i] -> q_j  
+    end
+    gosub bitFLipless_gate
+next

@@ -1,0 +1,120 @@
+sub bitFLipless_gate
+    # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
+    # And let it being affected by some random noise (for bitflip it will be a flip gate only)
+    # Variables op , q_i and q_j should come from outside
+    op == 1 -> is_s
+    op == 2 -> is_h
+    op == 3 -> is_t
+    op == 4 -> is_cnot
+    
+    0 -> q_i
+    q_i+num_qubits -> q_i_1
+    q_i+2*num_qubits -> q_i_2
+    if is_cnot
+        1-> q_j  
+        q_j+num_qubits -> q_j_1
+        q_j+2*num_qubits -> q_j_2 
+    end
+    
+    # Apply U+noise to the original psi
+    if is_s
+        s[in.[q_i]]
+        s[in.[q_i_1]]
+        s[in.[q_i_2]]
+    end
+    if is_h
+        h[in.[q_i]]
+        h[in.[q_i_1]]
+        h[in.[q_i_2]]
+    end
+    if is_t
+        t[in.[q_i]]
+        t[in.[q_i_1]]
+        t[in.[q_i_2]]
+    end
+    if is_cnot
+        cnot[in.[q_i], in.[q_j]]
+        cnot[in.[q_i_1], in.[q_j_1]]
+        cnot[in.[q_i_2], in.[q_j_2]]
+        in.[q_j] -> _input.[1]
+    end
+    in.[q_i] -> _input.[0]
+    
+    # Noise
+    maybe_flip(flipping_probability)[_input.[0]]
+    
+    # Copy the output of U the first copy and apply U to the second copy
+    _output.[0] -> in.[q_i]
+    if is_cnot
+        _output.[1] -> in.[q_j]
+        in.[q_j_1] -> _input.[1]
+    end
+    in.[q_i_1] -> _input.[0]
+    
+    # Noise
+    maybe_flip(flipping_probability)[_input.[0]]
+    
+    # Copy the output of U the second copy and apply U to the third copy
+    _output.[0] -> out.[q_i_1]
+    if is_cnot
+        _output.[1] -> out.[q_j_1]
+        in.[q_j_2] -> _input.[1]
+    end
+    in.[q_i_2] -> _input.[0]
+
+    # Noise
+    maybe_flip(flipping_probability)[_input.[0]]
+    
+    # Copy the output of U the third copy
+    _output.[0] -> out.[q_i_1]
+    if is_cnot
+        _output.[1] -> out.[q_j_1]
+    end
+    
+    # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
+    qubit -> anc.[0]
+    qubit -> anc.[1]
+    cnot[out.[q_i], anc.[0]]
+    cnot[out.[q_i], anc.[1]]
+    cnot[out.[q_i_1], anc.[0]]
+    cnot[out.[q_i_2], anc.[1]]
+    measure[anc.[0]] -> anc0
+    measure[anc.[1]] -> anc1
+    if anc0
+        if ~anc1
+            x[out.[q_i_2]]           
+        end
+    end
+    if ~anc0
+        if anc1
+            x[out.[q_i_1]]        
+        end
+        if ~anc1
+            x[out.[q_i]]
+        end
+    end
+    
+    if is_cnot
+        qubit -> anc.[0]
+        qubit -> anc.[1]
+        cnot[out.[q_j], anc.[0]]
+        cnot[out.[q_j], anc.[1]]
+        cnot[out.[q_j_1], anc.[0]]
+        cnot[out.[q_j_2], anc.[1]]
+        measure[anc.[0]] -> anc0
+        measure[anc.[1]] -> anc1
+        if anc0
+            if ~anc1
+                x[out.[q_j_2]]           
+            end
+        end
+        if ~anc0
+            if anc1
+                x[out.[q_j_1]]        
+            end
+            if ~anc1
+                x[out.[q_j]]
+            end
+        end
+    end
+endsub
