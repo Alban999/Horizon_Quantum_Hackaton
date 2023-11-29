@@ -8,14 +8,12 @@ next
 
 # Define main qubit state (here it is the 0 state)
 
-qubit -> array_qubits.[1]
+#x[array_qubits.[1]]
 
 # First part of BF circuit
+increment i to 2
 
-j = 2
-
-increment j to 3
-
+    i + 1 -> j
     cnot[array_qubits.[1], array_qubits.[j]]
 
 next
@@ -26,23 +24,15 @@ next
 
 # Second part of BF circuit (correction)
 
-j = 2
+increment i to 2
 
-increment j to 3
-
+    i + 1 -> j
     cnot[array_qubits.[1], array_qubits.[j]]
 
 next
 
 # toffoli gate applied with condition
 
-measure[array_qubits.[2]] -> ancilla_1
-measure[array_qubits.[3]] -> ancilla_2
+toffoli[array_qubits.[3], array_qubits.[2], array_qubits.[1]]
 
-if ancilla_1 && ancilla_2
-
-    x[array_qubits.[1]]
-
-end
-
-
+measure[array_qubits.[1]] -> qubit_1

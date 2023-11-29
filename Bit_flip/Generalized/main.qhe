@@ -1,41 +1,30 @@
-# Input: n, psi, U
+# This is your source file. You'll need a main.qhe file for us to compile your code. 
 
-# Psi definition (in progress)
+include constants.qh
+#include bitflip_noise.c2q
+include bitflip_protocol.qhe
 
-5 -> n
-
-increment i to n
-
-    qubit -> psi.[i]
-    qubit -> ancilla_1.[j]
-    qubit -> ancilla_2.[j]
-
+# Define the initial psi state
+increment i to num_qubits
+    qubit -> in.[i]
 next
 
-# Apply Noise
-
-# Second part
-
-increment j to n
-
-    if [psi.[j]]
-
-        x[ancilla_1.[j]]
-        x[ancilla_2.[j]]
-
-    end
-
+# Copy psi to the 2 ancillary registers
+increment i to num_qubits
+    i-1 -> i0
+    i+num_qubits-1 -> i1
+    i+2*num_qubits-1 -> i2
+    cnot[in.[i0], in.[i1]]
+    cnot[in.[i0], in.[i2]]
 next
 
-# Check toffoli
-
-increment j to n
-
-    measure[ancilla_1.[j]] -> a
-    measure[ancilla_2.[j]] -> b
-
-    if  a * b
-        x[psi.[j]]
+increment j to num_operations
+    j -1 -> i
+    ops.[i] -> op
+    q_is.[i] -> q_i
+    4 - op -> is_single
+    if ~is_single
+        q_js.[i] -> q_j  
     end
-
+    gosub bitFLipless_gate
 next
