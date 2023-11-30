@@ -15,8 +15,8 @@ increment i to n_log
 next
 
 repeat
-    #gosub noisy_state_prep
-    #gosub adjoint_encode
+    gosub noisy_state_prep
+    gosub adjoint_encode
     #gosub measure_syndromes
     #TODO: Retrieve measurement variables
     0 -> c
