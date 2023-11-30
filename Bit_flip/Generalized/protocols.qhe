@@ -1,17 +1,12 @@
+# Takes global variable q_t as input, should be defined before calling the routine
 sub five_q_gate
     #assigning the logical qubit to the physical
-    q_i+0*numb_qubits -> q_i1
-    q_i+1*numb_qubits -> q_i2
-    q_i+2*numb_qubits -> q_i3
-    q_i+3*numb_qubits -> q_i4
-    q_i+4*numb_qubits -> q_i5
-    if is_cnot
-        q_j+0*numb_qubits -> q_j1
-        q_j+1*numb_qubits -> q_j2
-        q_j+2*numb_qubits -> q_j3
-        q_j+3*numb_qubits -> q_j4
-        q_j+4*numb_qubits -> q_j5
-    end
+    q_t+0*numb_qubits -> q_i1
+    q_t+1*numb_qubits -> q_i2
+    q_t+2*numb_qubits -> q_i3
+    q_t+3*numb_qubits -> q_i4
+    q_t+4*numb_qubits -> q_i5
+
     # Hadamards on ancillas
     increment j to 4
         j-1 -> i
@@ -37,12 +32,12 @@ sub five_q_gate
     # Hadamards on ancillas
     increment j to 4
         j - 1 -> i
-        h[qubit_arr.[i]]
+        h[anc.[i]]
     next
     # Performing syndrome measurements and storing their values
     increment j to 4
         j - 1 -> i
-        measure[qubit_arr.[i]] -> measurements.[i]
+        measure[anc.[i]] -> measurements.[i]
     next
     # Computing Booleans in advance
     measurements.[0] == 0 -> m10
@@ -54,36 +49,36 @@ sub five_q_gate
         if measurements.[1]
             if measurements.[2]
                 if measurements.[3]
-                    y[qubit_arr.[q4]]
+                    y[in.[q_i4]]
                 end
                 if m40
-                    y[qubit_arr.[q3]]
+                    y[in.[q_i3]]
                 end
             end
             if m30
                 if measurements.[3]
-                    y[qubit_arr.[q2]]
+                    y[in.[q_i2]]
                 end
                 if m40
-                    x[qubit_arr.[q3]]
+                    x[in.[q_i3]]
                 end
             end
         end
         if m20
             if measurements.[2]
                 if measurements.[3]
-                    y[qubit_arr.[q1]]
+                    y[in.[q_i1]]
                 end
                 if m40
-                    z[qubit_arr.[q1]]
+                    z[in.[q_i1]]
                 end
             end
             if m30
                 if measurements.[3]
-                    z[qubit_arr.[q4]]
+                    z[in.[q_i4]]
                 end
                 if m40
-                    x[qubit_arr.[q2]]
+                    x[in.[q_i2]]
                 end
             end
         end
@@ -93,47 +88,45 @@ sub five_q_gate
         if measurements.[1]
             if measurements.[2]
                 if measurements.[3]
-                    y[qubit_arr.[q5]]
+                    y[in.[q_i5]]
                 end
                 if m40
-                    x[qubit_arr.[q4]]
+                    x[in.[q_i4]]
                 end
             end
             if m30
                 if measurements.[3]
-                    z[qubit_arr.[q2]]
+                    z[in.[q_i2]]
                 end
                 if m40
-                    z[qubit_arr.[q5]]
+                    z[in.[q_i5]]
                 end
             end
         end
         if m20
             if measurements.[2]
                 if measurements.[3]
-                    x[qubit_arr.[q5]]
+                    x[in.[q_i5]]
                 end
                 if m40
-                    z[qubit_arr.[q3]]
+                    z[in.[q_i3]]
                 end
             end
             if m30
                 if measurements.[3]
-                    x[qubit_arr.[q1]]
+                    x[in.[q_i1]]
                 end
             end
         end
     end
 endsub
 
-
-
 sub bitFLipless_gate
     # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
     # And let it being affected by some random noise (for bitflip it will be a flip gate only)
     # Variables op , q_i and q_j should come from outside
     
-    0 -> q_i
+    # 0 -> q_i
     q_i+num_qubits -> q_i_1
     q_i+2*num_qubits -> q_i_2
     if is_cnot
@@ -233,7 +226,7 @@ sub phaseFLipless_gate
     q_i+num_qubits -> q_i_1
     q_i+2*num_qubits -> q_i_2
     if is_cnot
-        1-> q_j  
+        #1-> q_j  
         q_j+num_qubits -> q_j_1
         q_j+2*num_qubits -> q_j_2 
     end
@@ -322,4 +315,62 @@ sub phaseFLipless_gate
             end
         end
     end
+endsub
+
+# q_i and q_j need to be defined before subroutine below is used
+# subroutine that applies logical gates for the five qubit error correcting code
+sub apply_5Q_gates
+    q_i+num_qubits -> q_i_1
+    q_i+2*num_qubits -> q_i_2
+    q_i+3*num_qubits -> q_i_3
+    q_i+4*num_qubits -> q_i_4
+    if is_cnot
+        q_j+num_qubits -> q_j_1
+        q_j+2*num_qubits -> q_j_2 
+        q_j+3*num_qubits -> q_j_3
+        q_j+4*num_qubits -> q_j_4
+    end
+    
+    if is_s
+        s[in.[q_i]]
+        s[in.[q_i_1]]
+        s[in.[q_i_2]]
+        s[in.[q_i_3]]
+        s[in.[q_i_4]]
+    end
+    if is_h
+        h[in.[q_i]]
+        h[in.[q_i_1]]
+        h[in.[q_i_2]]
+        h[in.[q_i_3]]
+        h[in.[q_i_4]]
+    end
+    if is_t
+        t[in.[q_i]]
+        t[in.[q_i_1]]
+        t[in.[q_i_2]]
+        t[in.[q_i_3]]
+        t[in.[q_i_4]]
+    end
+    if is_cnot
+        cnot[in.[q_i], in.[q_j]]
+        cnot[in.[q_i_1], in.[q_j_1]]
+        cnot[in.[q_i_2], in.[q_j_2]]
+        cnot[in.[q_i_3], in.[q_j_3]]
+        cnot[in.[q_i_4], in.[q_j_4]]
+    end
+endsub
+
+# Routine that applies the toy noise for five qubit error correcting code
+# should define q_t before calling it
+sub apply_5Q_rotation_noise
+    q_t+num_qubits -> q_t_1
+    q_t+2*num_qubits -> q_t_2
+    q_t+3*num_qubits -> q_t_3
+    q_t+4*num_qubits -> q_t_4
+    maybe_randomrotation(theta_x, theta_y, theta_z)[in.[q_t]]
+    maybe_randomrotation(theta_x, theta_y, theta_z)[in.[q_t_1]]
+    maybe_randomrotation(theta_x, theta_y, theta_z)[in.[q_t_2]]
+    maybe_randomrotation(theta_x, theta_y, theta_z)[in.[q_t_3]]
+    maybe_randomrotation(theta_x, theta_y, theta_z)[in.[q_t_4]]
 endsub
