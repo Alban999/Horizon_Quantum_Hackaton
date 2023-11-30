@@ -51,23 +51,21 @@ sub logical_y
 endsub
 
 sub logical_cx
-increment i to n_log
-    increment j to n_log
-        logical_index1 == i -> apply1
-        if apply1
-            logical_index2 == j -> apply2
-            if apply2
-                increment k to n_phys_per_log
-                    n_phys_per_log*logical_index1 + k-1 -> physical_index1
-                    n_phys_per_log*logical_index2 + k-1 -> physical_index2
-                    qubit_array.[physical_index1] -> qubit_ctrl
-                    qubit_array.[physical_index2] -> qubit_tgt
-                    cnot[qubit_ctrl, qubit_tgt]
-                next
+    increment i to n_log
+        increment j to n_log
+            logical_index1 == i -> apply1
+            if apply1
+                logical_index2 == j -> apply2
+                if apply2
+                    increment k to n_phys_per_log
+                        n_phys_per_log*logical_index1 + k-1 -> physical_index1
+                        n_phys_per_log*logical_index2 + k-1 -> physical_index2
+                        qubit_array.[physical_index1] -> qubit_ctrl
+                        qubit_array.[physical_index2] -> qubit_tgt
+                        cnot[qubit_ctrl, qubit_tgt]
+                    next
+                end
             end
-        end
-
-        end
+        next
     next
-next
-end sub
+endsub
