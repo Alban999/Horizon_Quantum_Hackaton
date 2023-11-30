@@ -1,37 +1,41 @@
 include logical_gates.qhe
 
 # n_log is number of logical qubits, n_phys_per_log is number of physical qubits per logical qubit
-2 -> n_log
-5 -> n_phys_per_log
+
+5 -> n_log_msd
+2 -> n_phys_per_log_msd
+2 -> n_ancilla_per_log_msd
 2.0 * 0.4776583 -> theta
 2.0 * (-2.74889) -> phi
 
+
 # Initialize qubits
-increment i to n_log
-    increment j to n_phys_per_log
+increment i to n_log  # Loop over logical qubits
+    increment j to n_phys_per_log  # Loop over physical qubits per logical qubit
         i+j -> index
         qubit -> qubit_array.[index]
     next
+    increment k to n_ancilla_per_log
+        i+k -> index
+        qubit -> ancilla_array.[index]
+    next
 next
 
-repeat
-    gosub noisy_state_prep
-    gosub adjoint_encode
-    #gosub measure_syndromes
-    #TODO: Retrieve measurement variables
-    0 -> c
+gosub msd
 
-    increment i to n_log
-        0 -> measurement.[i]
-        c + measurement.[i] -> c
-    next
-    c == 0 -> c
-until c
-
+sub msd
+    # Magic State Distillation subroutine (derived from arXiv:2310.12106)
+    repeat
+        gosub noisy_state_prep
+        gosub adjoint_encode
+        gosub measure_syndromes
+        c == 0 -> c
+    until c
+endsub
 
 
 sub noisy_state_prep
-    # Noisy state prep
+    # Noisy state prep subroutine (derived from arXiv:2310.12106, Fig 1)
     increment i to n_log
         increment j to n_phys_per_log
             i+j -> index
@@ -42,6 +46,7 @@ sub noisy_state_prep
 endsub
 
 sub adjoint_encode
+    # Custom circuit provided in reference paper arXiv:2310.12106 (Fig 1)
     2-> logical_index1
     gosub logical_x
     3 -> logical_index1

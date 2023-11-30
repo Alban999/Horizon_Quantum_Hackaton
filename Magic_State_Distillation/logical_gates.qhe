@@ -69,3 +69,17 @@ sub logical_cx
         next
     next
 endsub
+
+sub measure_syndromes
+    # Extract syndrome for all qubits, should all be 0 to stop the msd protocol
+    0 -> c
+    increment i to n_log_msd
+        increment j to n_ancilla_per_log_msd
+            measure ancilla_array.[n_ancilla_per_log_msd*i + j-1] -> count
+            c + count -> c
+            measure qubit_reg.[j] -> measure_reg.[j]
+        next
+    end
+    next
+
+endsub
