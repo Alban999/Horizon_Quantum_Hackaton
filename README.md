@@ -12,7 +12,7 @@ The Python script `correct_circuit.py` will execute the API on Horizon Quantum a
 
 ## Code Overview:
 
-1. **correct_circuit.py:** This Python file serves as the user interface, taking 5 input variables:
+1. **`correct_circuit.py`:** This Python file serves as the user interface, taking 5 input variables:
    1. `numb_qubits`: the number of logical qubits.
    2. `operations`: if an integer, it represents the number of operations (`num_operations`); if a file.txt, a Python routine (`circuit2lists.py`) converts the OPENQASM circuit to our formalism.
    3. `protocol`: an integer selecting the QEC scheme (1->bitflip_protocol, 2->phaseflip_protocol, 3->five_qubits_protocol).
