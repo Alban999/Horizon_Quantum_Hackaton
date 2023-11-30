@@ -1,5 +1,4 @@
 # This is your source file. You'll need a main.qhe file for us to compile your code. 
-
 include constants.qh
 #include bitflip_noise.c2q
 include bitflip_protocol.qhe
@@ -22,8 +21,8 @@ increment j to num_operations
     j -1 -> i
     ops.[i] -> op
     q_is.[i] -> q_i
-    4 - op -> is_single
-    if ~is_single
+    op == 4 -> is_double
+    if is_double
         q_js.[i] -> q_j  
     end
     gosub bitFLipless_gate
