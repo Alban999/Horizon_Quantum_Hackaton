@@ -1,5 +1,5 @@
 # YOGATES: Mitigating Noisy Gates at a Quantum Level
-![YOGATES](yogates.png)
+![YOGATES](yogates_logo.png)
 
 In the inaugural Horizon Quantum Hackathon, we harnessed Triple Alpha's capabilities to develop an API that executes a Quantum Error Correction (QEC) protocol on arbitrary circuits involving Clifford+T gates. This innovative solution is implemented using the Helium language.
 
