@@ -7,9 +7,12 @@ sub five_q_gate
     q_t+3*numb_qubits -> q_i4
     q_t+4*numb_qubits -> q_i5
 
+    
+
     # Hadamards on ancillas
     increment j to 4
         j-1 -> i
+        qubit -> anc.[i]
         h[anc.[i]]
     next
     # controlled operations on ancillas and state (state is encoded in 5i, ... 5i+4),
