@@ -2,7 +2,7 @@ import functions as fn
 
 output_file = 'triple_alpha_code/constants.qh'
 numb_qubits = int(input("numb_qubits: "))
-numb_operations = input("numb_operations: ")
+operations = input("operations: ")
 
 protocol = input("protocol: ")
 noise_model = input("noise_model: ")
@@ -10,10 +10,10 @@ backend = input("backend: ")
 
 
 try: 
-    numb_operations = int(numb_operations)
+    numb_operations = int(operations)
     input_file = 'input_file.txt'
 except TypeError:
-    input_file = numb_operations
+    input_file = operations
 
 print('input file:', input_file)
 
