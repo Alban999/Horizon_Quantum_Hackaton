@@ -1,10 +1,10 @@
-# This is your source file. You'll need a main.qhe file for us to compile your code.
-
 sub logical_x
     increment i to n_log
-        if logical_index1 == i
+        logical_index1 == i -> apply
+        if apply
             increment j to n_phys_per_log
-                qubit_array[n_phys_per_log*logical_index1 + j-1] -> qubit_reg.[j]
+                n_phys_per_log*logical_index1 + j-1 -> physical_index
+                qubit_array.[physical_index] -> qubit_reg.[j]
                 x[qubit_reg.[j]]
             next
         end
@@ -13,9 +13,11 @@ endsub
 
 sub logical_z
     increment i to n_log
-        if logical_index1 == i
+        logical_index1 == i -> apply
+        if apply
             increment j to n_phys_per_log
-                qubit_array[n_phys_per_log*logical_index1 + j-1] -> qubit_reg.[j]
+                n_phys_per_log*logical_index1 + j-1 -> physical_index
+                qubit_array.[physical_index] -> qubit_reg.[j]
                 z[qubit_reg.[j]]
             next
         end
@@ -24,9 +26,11 @@ endsub
 
 sub logical_h
     increment i to n_log
-        if logical_index1 == i
+        logical_index1 == i -> apply
+        if apply
             increment j to n_phys_per_log
-                qubit_array[n_phys_per_log*logical_index1 + j-1] -> qubit_reg.[j]
+                n_phys_per_log*logical_index1 + j-1 -> physical_index
+                qubit_array.[physical_index] -> qubit_reg.[j]
                 h[qubit_reg.[j]]
             next
         end
@@ -35,9 +39,11 @@ endsub
 
 sub logical_y
     increment i to n_log
-        if logical_index1 == i
+        logical_index1 == i -> apply
+        if apply
             increment j to n_phys_per_log
-                qubit_array[n_phys_per_log*logical_index1 + j-1] -> qubit_reg.[j]
+                n_phys_per_log*logical_index1 + j-1 -> physical_index
+                qubit_array.[physical_index] -> qubit_reg.[j]
                 y[qubit_reg.[j]]
             next
         end
@@ -47,11 +53,15 @@ endsub
 sub logical_cx
 increment i to n_log
     increment j to n_log
-        if logical_index1 == i
-            if logical_index2 == j
+        logical_index1 == i -> apply1
+        if apply1
+            logical_index2 == j -> apply2
+            if apply2
                 increment k to n_phys_per_log
-                    qubit_array.[n_phys_per_log*logical_index1 + k-1] -> qubit_ctrl
-                    qubit_array.[n_phys_per_log*logical_index2 + k-1] -> qubit_tgt
+                    n_phys_per_log*logical_index1 + k-1 -> physical_index1
+                    n_phys_per_log*logical_index2 + k-1 -> physical_index2
+                    qubit_array.[physical_index1] -> qubit_ctrl
+                    qubit_array.[physical_index2] -> qubit_tgt
                     cnot[qubit_ctrl, qubit_tgt]
                 next
             end

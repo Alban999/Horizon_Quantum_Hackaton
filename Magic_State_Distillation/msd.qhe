@@ -1,17 +1,17 @@
 # This is your source file. You'll need a main.qhe file for us to compile your code.
 
-include logical_gates.qhe
+
 sub noisy_state_prep
     # Noisy state prep
     increment i to n_log
         increment j to n_phys_per_log
-            ry(phi)[qubit_array.[i+j]]
-            rz(theta)[qubit_array.[i+j]]
+            i+j -> index
+            ry(phi)[qubit_array.[index]]
+            rz(theta)[qubit_array.[index]]
         next
     next
 endsub
 sub adjoint_encode
-    qubit_ref -> _input.[1]
     2-> logical_index1
     gosub logical_x
     3 -> logical_index1
@@ -32,7 +32,8 @@ sub adjoint_encode
     4 -> logical_index2
     gosub logical_swap
     increment i to 5
-        if i ~= 3
+        i ~= 3 -> check
+        if check
         i -> logical_index1
         gosub logical_h
         end
@@ -88,7 +89,7 @@ sub adjoint_encode
 endsub
 
 # n_log is number of logical qubits, n_phys_per_log is number of physical qubits per logical qubit
-3 -> n_log
+2 -> n_log
 5 -> n_phys_per_log
 2.0 * 0.4776583 -> theta
 2.0 * (-2.74889) -> phi
@@ -96,17 +97,21 @@ endsub
 # Initialize qubits
 increment i to n_log
     increment j to n_phys_per_log
-        qubit qubit_array.[i+j]
+        i+j -> index
+        qubit -> qubit_array.[index]
     next
 next
 
 repeat
-    gosub noisy_state prep
+    gosub noisy_state_prep
     gosub adjoint_encode
-    gosub measure_syndromes
+    #gosub measure_syndromes
     #TODO: Retrieve measurement variables
     0 -> c
+
     increment i to n_log
-    c + measurement.[i] -> c
+        0 -> measurement.[i]
+        c + measurement.[i] -> c
     next
-until c == 0
+    c == 0 -> c
+until c
