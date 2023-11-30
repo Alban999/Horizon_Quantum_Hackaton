@@ -1,4 +1,4 @@
-# YOGATES: Mitigating Noisy Gates at a Quantum Level
+# YOGATES: Mitigating Noisy Gates at High Level
 ![YOGATES](yogates_logo.png)
 
 In the inaugural Horizon Quantum Hackathon, we harnessed Triple Alpha's capabilities to develop an API that executes a Quantum Error Correction (QEC) protocol on arbitrary circuits involving Clifford+T gates. This innovative solution is implemented using the Helium language.
@@ -32,4 +32,4 @@ The Python script `correct_circuit.py` will execute the API on Horizon Quantum a
    5. `maybe_noise.py`: Single-qubit operation applying noise on the 'in' qubits.
    6. `standard_gate_set.qis`: Set of operations, containing the new noisy gates called from `maybe_noise.py`.
 
-YOGATES, your solution to mitigating noisy gates in quantum circuits at a high level! 🎉
+YOGATES, your solution to mitigating noisy gates in quantum circuits at high level! 🎉
