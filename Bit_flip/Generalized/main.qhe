@@ -68,9 +68,9 @@ end
 if is_protocol_five_qubit
     # Implementantion of 5-qubit EC code
     # Need 5n + 4 physical qubits for n logical ones
-    # Convention: First 4 are ancillas other 5n encode the logical qubits
+    # Convention: Last 4 are ancillas other 5n encode the logical qubits
     # Setting up the parameters
-    # Initialising qubits
+    # Initialising state
     increment i to num_qubits
         i-1 -> i0
         i+num_qubits-1 -> i1
@@ -84,7 +84,7 @@ if is_protocol_five_qubit
     next
     # Apply the operations by embedding the 5-qubit corrector after each gate
     increment j to num_operations
-        j -1 -> i
+        j-1 -> i
         ops.[i] -> op
         q_is.[i] -> q_i
         op == 1 -> is_s
@@ -94,9 +94,36 @@ if is_protocol_five_qubit
         if is_cnot
             q_js.[i] -> q_j
         end
-        gosub five_q_gate
+        #Applying the operations to physical qubits
+        gosub apply_5Q_gates
+        
+        #Applying the noise
+        if is_cnot
+            q_i -> q_t
+            gosub apply_5Q_rotation_noise
+            q_j -> q_t 
+            gosub apply_5Q_rotation_noise
+        end
+        
+        if ~is_cnot
+            q_i -> q_t
+            gosub apply_5Q_rotation_noise
+        end
+        
+        #Applying the error correcting code
+        # In case we are applying CNOT, we correct both qubits
+        if is_cnot
+            #applying to q_i
+            q_i -> q_t      #defining target
+            gosub five_q_gate
+            #applying to q_j
+            q_j -> q_t      #defining target
+            gosub five_q_gate
+        end
+        if ~is_cnot
+            q_j -> q_t      #defining target
+            gosub five_q_gate
+        end
+        
     next
-    # -------------------------------IMPLEMENT BELOW AS SUBROUTINE
-    #Should have 1 input: target qubit
-    #subroutine which performs error correction on target_q logical qubit
 end
