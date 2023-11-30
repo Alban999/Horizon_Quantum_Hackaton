@@ -1,0 +1,325 @@
+sub five_q_gate
+    #assigning the logical qubit to the physical
+    q_i+0*numb_qubits -> q_i1
+    q_i+1*numb_qubits -> q_i2
+    q_i+2*numb_qubits -> q_i3
+    q_i+3*numb_qubits -> q_i4
+    q_i+4*numb_qubits -> q_i5
+    if is_cnot
+        q_j+0*numb_qubits -> q_j1
+        q_j+1*numb_qubits -> q_j2
+        q_j+2*numb_qubits -> q_j3
+        q_j+3*numb_qubits -> q_j4
+        q_j+4*numb_qubits -> q_j5
+    end
+    # Hadamards on ancillas
+    increment j to 4
+        j-1 -> i
+        h[anc.[i]]
+    next
+    # controlled operations on ancillas and state (state is encoded in 5i, ... 5i+4),
+    cnot[anc.[0], in.[q_i1]]
+    cz[anc.[0], in.[q_i2]]
+    cz[anc.[0], in.[q_i3]]
+    cnot[anc.[1], in.[q_i2]]
+    cnot[anc.[2], in.[q_i1]]
+    cnot[anc.[0], in.[q_i4]]
+    cz[anc.[1], in.[q_i3]]
+    cz[anc.[3], in.[q_i1]]
+    cz[anc.[1], in.[q_i4]]
+    cnot[anc.[2], in.[q_i3]]
+    cnot[anc.[3], in.[q_i1]]
+    cnot[anc.[1], in.[q_i5]]
+    cz[anc.[2], in.[q_i4]]
+    cz[anc.[2], in.[q_i5]]
+    cnot[anc.[3], in.[q_i4]]
+    cz[anc.[3], in.[q_i5]]
+    # Hadamards on ancillas
+    increment j to 4
+        j - 1 -> i
+        h[qubit_arr.[i]]
+    next
+    # Performing syndrome measurements and storing their values
+    increment j to 4
+        j - 1 -> i
+        measure[qubit_arr.[i]] -> measurements.[i]
+    next
+    # Computing Booleans in advance
+    measurements.[0] == 0 -> m10
+    measurements.[1] == 0 -> m20
+    measurements.[2] == 0 -> m30
+    measurements.[3] == 0 -> m40
+    # Correction of errors
+    if measurements.[0]
+        if measurements.[1]
+            if measurements.[2]
+                if measurements.[3]
+                    y[qubit_arr.[q4]]
+                end
+                if m40
+                    y[qubit_arr.[q3]]
+                end
+            end
+            if m30
+                if measurements.[3]
+                    y[qubit_arr.[q2]]
+                end
+                if m40
+                    x[qubit_arr.[q3]]
+                end
+            end
+        end
+        if m20
+            if measurements.[2]
+                if measurements.[3]
+                    y[qubit_arr.[q1]]
+                end
+                if m40
+                    z[qubit_arr.[q1]]
+                end
+            end
+            if m30
+                if measurements.[3]
+                    z[qubit_arr.[q4]]
+                end
+                if m40
+                    x[qubit_arr.[q2]]
+                end
+            end
+        end
+    end
+    
+    if m10
+        if measurements.[1]
+            if measurements.[2]
+                if measurements.[3]
+                    y[qubit_arr.[q5]]
+                end
+                if m40
+                    x[qubit_arr.[q4]]
+                end
+            end
+            if m30
+                if measurements.[3]
+                    z[qubit_arr.[q2]]
+                end
+                if m40
+                    z[qubit_arr.[q5]]
+                end
+            end
+        end
+        if m20
+            if measurements.[2]
+                if measurements.[3]
+                    x[qubit_arr.[q5]]
+                end
+                if m40
+                    z[qubit_arr.[q3]]
+                end
+            end
+            if m30
+                if measurements.[3]
+                    x[qubit_arr.[q1]]
+                end
+            end
+        end
+    end
+endsub
+
+
+
+sub bitFLipless_gate
+    # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
+    # And let it being affected by some random noise (for bitflip it will be a flip gate only)
+    # Variables op , q_i and q_j should come from outside
+    
+    0 -> q_i
+    q_i+num_qubits -> q_i_1
+    q_i+2*num_qubits -> q_i_2
+    if is_cnot
+        1-> q_j  
+        q_j+num_qubits -> q_j_1
+        q_j+2*num_qubits -> q_j_2 
+    end
+    
+    # Apply U+noise to the original psi
+    if is_s
+        s[in.[q_i]]
+        s[in.[q_i_1]]
+        s[in.[q_i_2]]
+    end
+    if is_h
+        h[in.[q_i]]
+        h[in.[q_i_1]]
+        h[in.[q_i_2]]
+    end
+    if is_t
+        t[in.[q_i]]
+        t[in.[q_i_1]]
+        t[in.[q_i_2]]
+    end
+    if is_cnot
+        cnot[in.[q_i], in.[q_j]]
+        cnot[in.[q_i_1], in.[q_j_1]]
+        cnot[in.[q_i_2], in.[q_j_2]]
+    end
+    
+    # Noise
+    maybe_flip(flipping_probability)[in.[q_i]]
+    maybe_flip(flipping_probability)[in.[q_i_1]]
+    maybe_flip(flipping_probability)[in.[q_i_2]]
+    
+    if is_cnot
+         maybe_flip(flipping_probability)[in.[q_j]]
+        maybe_flip(flipping_probability)[in.[q_j_1]]
+        maybe_flip(flipping_probability)[in.[q_j_2]]
+    end
+    
+    # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
+    qubit -> anc.[0]
+    qubit -> anc.[1]
+    cnot[out.[q_i], anc.[0]]
+    cnot[out.[q_i], anc.[1]]
+    cnot[out.[q_i_1], anc.[0]]
+    cnot[out.[q_i_2], anc.[1]]
+    measure[anc.[0]] -> anc0
+    measure[anc.[1]] -> anc1
+    if anc0
+        if ~anc1
+            x[out.[q_i_2]]           
+        end
+    end
+    if ~anc0
+        if anc1
+            x[out.[q_i_1]]        
+        end
+        if ~anc1
+            x[out.[q_i]]
+        end
+    end
+    
+    if is_cnot
+        qubit -> anc.[0]
+        qubit -> anc.[1]
+        cnot[out.[q_j], anc.[0]]
+        cnot[out.[q_j], anc.[1]]
+        cnot[out.[q_j_1], anc.[0]]
+        cnot[out.[q_j_2], anc.[1]]
+        measure[anc.[0]] -> anc0
+        measure[anc.[1]] -> anc1
+        if anc0
+            if ~anc1
+                x[out.[q_j_2]]           
+            end
+        end
+        if ~anc0
+            if anc1
+                x[out.[q_j_1]]        
+            end
+            if ~anc1
+                x[out.[q_j]]
+            end
+        end
+    end
+endsub
+
+
+sub phaseFLipless_gate
+    # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
+    # And let it being affected by some random noise (for bitflip it will be a flip gate only)
+    # Variables op , q_i and q_j should come from outside
+    
+    0 -> q_i
+    q_i+num_qubits -> q_i_1
+    q_i+2*num_qubits -> q_i_2
+    if is_cnot
+        1-> q_j  
+        q_j+num_qubits -> q_j_1
+        q_j+2*num_qubits -> q_j_2 
+    end
+    
+    # Apply U+noise to the original psi
+    if is_s
+        s[in.[q_i]]
+        s[in.[q_i_1]]
+        s[in.[q_i_2]]
+    end
+    if is_h
+        h[in.[q_i]]
+        h[in.[q_i_1]]
+        h[in.[q_i_2]]
+    end
+    if is_t
+        t[in.[q_i]]
+        t[in.[q_i_1]]
+        t[in.[q_i_2]]
+    end
+    if is_cnot
+        cnot[in.[q_i], in.[q_j]]
+        cnot[in.[q_i_1], in.[q_j_1]]
+        cnot[in.[q_i_2], in.[q_j_2]]
+    end
+    
+    # Noise
+    maybe_flip(flipping_probability)[in.[q_i]]
+    maybe_flip(flipping_probability)[in.[q_i_1]]
+    maybe_flip(flipping_probability)[in.[q_i_2]]
+    
+    if is_cnot
+         maybe_flip(flipping_probability)[in.[q_j]]
+        maybe_flip(flipping_probability)[in.[q_j_1]]
+        maybe_flip(flipping_probability)[in.[q_j_2]]
+    end
+    
+    # Hadamard gates
+    h[in.[q_i]]
+    h[in.[q_i_1]]
+    h[in.[q_i_2]]
+    
+    # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
+    qubit -> anc.[0]
+    qubit -> anc.[1]
+    cnot[out.[q_i], anc.[0]]
+    cnot[out.[q_i], anc.[1]]
+    cnot[out.[q_i_1], anc.[0]]
+    cnot[out.[q_i_2], anc.[1]]
+    measure[anc.[0]] -> anc0
+    measure[anc.[1]] -> anc1
+    if anc0
+        if ~anc1
+            x[out.[q_i_2]]           
+        end
+    end
+    if ~anc0
+        if anc1
+            x[out.[q_i_1]]        
+        end
+        if ~anc1
+            x[out.[q_i]]
+        end
+    end    
+    
+    if is_cnot
+        qubit -> anc.[0]
+        qubit -> anc.[1]
+        cnot[out.[q_j], anc.[0]]
+        cnot[out.[q_j], anc.[1]]
+        cnot[out.[q_j_1], anc.[0]]
+        cnot[out.[q_j_2], anc.[1]]
+        measure[anc.[0]] -> anc0
+        measure[anc.[1]] -> anc1
+        if anc0
+            if ~anc1
+                x[out.[q_j_2]]           
+            end
+        end
+        if ~anc0
+            if anc1
+                x[out.[q_j_1]]        
+            end
+            if ~anc1
+                x[out.[q_j]]
+            end
+        end
+    end
+endsub
