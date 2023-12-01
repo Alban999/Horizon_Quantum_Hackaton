@@ -5,9 +5,9 @@ In the inaugural Horizon Quantum Hackathon, we harnessed Triple Alpha's capabili
 
 ## User Guide to Run the Code:
 
-1. Copy files from the `triple_alpha_code` folder to the Helium directory, excluding `standard_gate_set.qis`, which replaces the original file.
-2. Correct the API address in `correct_circuit.py`.
-3. Run `correct_circuit.py` from the terminal, providing 5 parameters to describe the experiment.
+1. Run `correct_circuit.py` from the terminal, providing 5 parameters to describe the experiment.
+2. Copy files from the `triple_alpha_code` folder to the Helium directory, excluding `standard_gate_set.qis`, which has to replace the instructions set in the 'Other' folder.
+3. Run `results_display.py` from the terminal, providing 3 parameters to return the final dictionary obtained from Horizon Quantum.
 
 The Python script `correct_circuit.py` will execute the API on Horizon Quantum and yield the final register obtained from the backend.
 
