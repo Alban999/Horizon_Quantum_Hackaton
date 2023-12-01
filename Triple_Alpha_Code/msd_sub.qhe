@@ -1,18 +1,13 @@
-include logical_gates.qhe
 # n_log is number of logical qubits, n_phys_per_log is number of physical qubits per logical qubit
 
-5 -> n_qubits_msd
-increment i to n_qubits_msd
-    qubit -> qubit_array_msd.[i]
-1 -> target_q
-2.0 * 0.4776583 -> theta
-2.0 * (-2.74889) -> phi
-3 -> n_log
-2 -> n_ancilla_per_log
-2 -> n_phys_per_log
 
-gosub initialize_qubits
-gosub msd
+sub initialize_msd_qubits
+    # Initialize qubits for magic state distillation
+    increment i to n_qubits_msd
+        qubit -> qubit_array_msd.[i]
+    next
+endsub
+
 
 # Initialize logical qubits and ancillas
 sub initialize_qubits
@@ -28,6 +23,7 @@ sub initialize_qubits
     next
 endsub
 
+
 sub msd
     # Magic State Distillation subroutine (derived from arXiv:2310.12106)
     repeat
@@ -38,13 +34,11 @@ sub msd
     until c
 endsub
 
-
 sub noisy_state_prep
     # Noisy state prep subroutine (derived from arXiv:2310.12106, Fig 1)
     increment i to n_qubits_msd
         ry(phi)[qubit_array_msd.[i]]
         rz(theta)[qubit_array_msd.[i]]
-        next
     next
 endsub
 
@@ -55,7 +49,8 @@ sub adjoint_encode
     z[qubit_array_msd.[4]]
     y[qubit_array_msd.[5]]
     increment i to 4
-        cnot[qubit_array_msd.[1], qubit_array_msd.[i+1]]
+        i+1 -> j
+        cnot[qubit_array_msd.[1], qubit_array_msd.[j]]
     next
     h[qubit_array_msd.[5]]
     swap[qubit_array_msd.[4], qubit_array_msd.[5]]

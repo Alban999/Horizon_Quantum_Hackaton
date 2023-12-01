@@ -1,10 +1,17 @@
 # This is your source file. You’ll need a main.qhe file for us to compile your code.
 include constants.qh
 include protocols.qhe
+include msd_sub.qhe
+include logical_gates.qhe
+
 # Define the initial psi state
 increment i to numb_qubits
     qubit -> in.[i]
 next
+
+# Define the qubit for Magic State Distillation
+gosub initialize_msd_qubits
+gosub msd
 
 protocol == 0 -> is_no_protocol
 protocol == 1 -> is_protocol_bitflip

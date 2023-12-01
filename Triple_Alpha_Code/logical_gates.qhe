@@ -99,11 +99,34 @@ sub measure_syndromes_msd
     0 -> syndrome
     increment i to 4
         i+1 -> j
-        measure qubit_array_msd.[j] -> m.[i]
+        measure[qubit_array_msd.[j]] -> m.[i]
         m.[i] + syndrome -> syndrome
         if m
             x[qubit_array_msd.[j]]
         end
     next
 
+endsub
+
+sub logical_t
+    increment i to num_qubits  # Loop over logical qubits
+        logical_index1 == i -> apply  # Check if logical qubit is to be acted on
+        if apply
+            increment j to  numb_log_2_phys  # Loop over physical qubits
+                cnot[in.[j], qubit_array_msd.[j]] # Apply CNOT between logical qubit and distilled magic state
+                measure[qubit_array_msd.[j]] -> m_msd.[j]  # Project Magic state register
+            next
+            0 -> sum
+            increment j to  numb_log_2_phys
+                m_msd.[j] + sum -> sum  # Sum the measurement outcomes to assign binary value (majority rule)
+            next
+            numb_log_2_phys /2 -> threshold
+            sum > threshold -> apply_s
+            if apply_s  # Conditional measurement, if 1, apply S gate on logical qubit
+                increment j to 5
+                    s[in.[j]]
+                next
+            end
+        end
+    next
 endsub

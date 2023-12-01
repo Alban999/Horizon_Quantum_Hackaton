@@ -9,9 +9,6 @@ sub initialize_msd_qubits
     qubit -> qubit_array_msd.[i]
 endsub
 
-gosub initialize_qubits
-gosub msd
-
 # Initialize logical qubits and ancillas
 sub initialize_qubits
     increment i to n_log  # Loop over logical qubits

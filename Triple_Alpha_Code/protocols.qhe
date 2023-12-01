@@ -148,7 +148,6 @@ sub five_q_protocol
 endsub
 
 
-
 # q_i and q_j need to be defined before subroutine below is used
 # subroutine that applies logical gates for the physical qubits
 sub apply_gates
@@ -176,7 +175,8 @@ sub apply_gates
             h[in.[q_i_temp]]
         end
         if is_t
-            t[in.[q_i_temp]]
+            q_i_temp -> logical_index1
+            gosub logical_t
         end
         if is_cnot
             q_j+(i-1)*numb_qubits -> q_j_temp
