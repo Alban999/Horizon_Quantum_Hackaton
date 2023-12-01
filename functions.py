@@ -1,10 +1,6 @@
-# Open the file in read mode
-import re
-from qiskit import QuantumCircuit
-from random import random
-pattern = r"\[(\d+)\]"
-
 def create_cliffordT(num_qubits, num_operations, file = 'input.txt'):
+    from qiskit import QuantumCircuit # To generate the QASM file, could be avoided but we used it for simplicity
+    from random import random
     # create a 
     circuit = QuantumCircuit(num_qubits)
     for num_op in range(num_operations):
@@ -25,6 +21,8 @@ def create_cliffordT(num_qubits, num_operations, file = 'input.txt'):
         file.write(circuit.qasm())
 
 def read_qasm(file = 'input.txt'):
+    import re
+    pattern = r"\[(\d+)\]"
     ops = []
     q_is = []
     q_js = []
@@ -58,3 +56,32 @@ def read_qasm(file = 'input.txt'):
     numb_operations = len(ops)
     # now you have numb_qubits, numb_operations, ops, q_is, q_js
     return {'numb_qubits':numb_qubits, 'numb_operations':numb_operations, 'ops':ops, 'q_is':q_is, 'q_js':q_js}
+
+
+def extract_counts_from_response(response_text):
+    # Find the start and end indices of the "meas_outcomes" array
+    meas_outcomes_str = response_text.split('meas_outcomes')[1]
+
+    # Count occurrences of '["0"]' and '["1"]' in the substring
+    count_0 = meas_outcomes_str.count('0')
+    count_1 = meas_outcomes_str.count('1')
+
+    return count_0, count_1
+
+def get_results_from_api(url, api_key, job_id):
+    import requests
+    headers = {
+        'X-Api-Key': api_key,
+        'Content-Type': 'application/json',
+    }
+
+    data = {
+        'job_id': job_id,
+        'inputs': [['a', '1'], ['b', '1']],
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    
+    count_0, count_1 = extract_counts_from_response(response.text)
+    
+    return {'0': count_0, '1': count_1}
