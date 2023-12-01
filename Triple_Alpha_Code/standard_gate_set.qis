@@ -1,0 +1,156 @@
+maybe_flip {
+    dim_in: 2
+    dim_out: 2
+    params : 3
+    
+    kraus: @maybe_flip
+}
+
+x {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [0 1; 1 0]
+}
+
+y {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [0 -i; i 0]
+}
+
+z {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [1 0; 0 -1]
+}
+
+rx {
+    dim_in: 2
+    dim_out: 2
+    params : 1
+    
+    kraus: @rx
+}
+
+
+ry {
+    dim_in: 2
+    dim_out: 2
+    params : 1
+    
+    kraus: @ry
+}
+
+
+rz {
+    dim_in: 2
+    dim_out: 2
+    params : 1
+    
+    kraus: @rz
+}
+
+
+t {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [1 0; 0 0.7071067811865475+0.7071067811865475i]
+}
+
+td {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [1 0; 0 0.7071067811865475-0.7071067811865475i]
+}
+
+s {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [1 0; 0 i]
+}
+
+sd {
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [1 0; 0 -i]
+}
+
+h {    
+    dim_in: 2
+    dim_out: 2
+    
+    kraus: [0.7071067811865475 0.7071067811865475; 0.7071067811865475 -0.7071067811865475]
+}
+
+cnot {
+    dim_in: 2 2
+    dim_out: 2 2
+    
+    kraus: [1 0 0 0; 0 1 0 0; 0 0 0 1; 0 0 1 0]
+}
+
+cz {
+    dim_in: 2 2
+    dim_out: 2 2
+    
+    kraus: [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 -1]
+}
+
+swap {
+    dim_in: 2 2
+    dim_out: 2 2
+    
+    kraus: [1 0 0 0; 0 0 1 0; 0 1 0 0; 0 0 0 1]
+}
+
+toffoli {
+    dim_in: 2 2 2
+    dim_out: 2 2 2
+    
+    kraus: [1 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 1; 0 0 0 0 0 0 1 0]
+}
+
+fredkin {
+    dim_in: 2 2 2
+    dim_out: 2 2 2
+    
+    kraus: [1 0 0 0 0 0 0 0; 0 1 0 0 0 0 0 0; 0 0 1 0 0 0 0 0; 0 0 0 1 0 0 0 0; 0 0 0 0 1 0 0 0; 0 0 0 0 0 0 1 0; 0 0 0 0 0 1 0 0; 0 0 0 0 0 0 0 1]
+}
+
+qubit {
+    dim_in: 1
+    dim_out: 2
+
+    kraus: [1; 0]
+}
+
+measure {
+    dim_in: 2
+    dim_out: 1
+
+    kraus: [1 0] -> 0
+    kraus: [0 1] -> 1
+}
+
+discard {
+    dim_in: 2
+    dim_out: 1
+
+    kraus: [1 0]
+    kraus: [0 1]
+}
+
+clear {
+    dim_in: 2
+    dim_out: 1
+
+    kraus: [1 0]
+    kraus: [0 1]
+}
