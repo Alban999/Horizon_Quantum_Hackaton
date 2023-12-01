@@ -1,0 +1,83 @@
+include logical_gates.qhe
+# n_log is number of logical qubits, n_phys_per_log is number of physical qubits per logical qubit
+
+5 -> n_qubits_msd
+increment i to n_qubits_msd
+    qubit -> qubit_array_msd.[i]
+1 -> target_q
+2.0 * 0.4776583 -> theta
+2.0 * (-2.74889) -> phi
+3 -> n_log
+2 -> n_ancilla_per_log
+2 -> n_phys_per_log
+
+gosub initialize_qubits
+gosub msd
+
+# Initialize logical qubits and ancillas
+sub initialize_qubits
+    increment i to n_log  # Loop over logical qubits
+        increment j to n_phys_per_log  # Loop over physical qubits per logical qubit
+            i+j -> index
+            qubit -> qubit_array.[index]
+        next
+        increment k to n_ancilla_per_log
+            i+k -> index
+            qubit -> ancilla_array.[index]
+        next
+    next
+endsub
+
+sub msd
+    # Magic State Distillation subroutine (derived from arXiv:2310.12106)
+    repeat
+        gosub noisy_state_prep
+        gosub adjoint_encode
+        gosub measure_syndromes_msd
+        syndrome == 0 -> c
+    until c
+endsub
+
+
+sub noisy_state_prep
+    # Noisy state prep subroutine (derived from arXiv:2310.12106, Fig 1)
+    increment i to n_qubits_msd
+        ry(phi)[qubit_array_msd.[i]]
+        rz(theta)[qubit_array_msd.[i]]
+        next
+    next
+endsub
+
+sub adjoint_encode
+    # Custom circuit provided in reference paper arXiv:2310.12106 (Fig 1)
+    x[qubit_array_msd.[2]]
+    x[qubit_array_msd.[3]]
+    z[qubit_array_msd.[4]]
+    y[qubit_array_msd.[5]]
+    increment i to 4
+        cnot[qubit_array_msd.[1], qubit_array_msd.[i+1]]
+    next
+    h[qubit_array_msd.[5]]
+    swap[qubit_array_msd.[4], qubit_array_msd.[5]]
+    h[qubit_array_msd.[1]]
+    h[qubit_array_msd.[2]]
+    h[qubit_array_msd.[4]]
+    h[qubit_array_msd.[5]]
+
+    cnot[qubit_array_msd.[4], qubit_array_msd.[5]]
+    cnot[qubit_array_msd.[2], qubit_array_msd.[5]]
+    h[qubit_array_msd.[4]]
+    cnot[qubit_array_msd.[1], qubit_array_msd.[4]]
+    cnot[qubit_array_msd.[2], qubit_array_msd.[3]]
+    cnot[qubit_array_msd.[1], qubit_array_msd.[3]]
+    h[qubit_array_msd.[2]]
+    cnot[qubit_array_msd.[1], qubit_array_msd.[2]]
+    h[qubit_array_msd.[1]]
+    cnot[qubit_array_msd.[5], qubit_array_msd.[4]]
+    cnot[qubit_array_msd.[5], qubit_array_msd.[3]]
+    cnot[qubit_array_msd.[4], qubit_array_msd.[3]]
+    cnot[qubit_array_msd.[3], qubit_array_msd.[2]]
+    cnot[qubit_array_msd.[5], qubit_array_msd.[1]]
+    cnot[qubit_array_msd.[4], qubit_array_msd.[1]]
+    cnot[qubit_array_msd.[2], qubit_array_msd.[1]]
+endsub
