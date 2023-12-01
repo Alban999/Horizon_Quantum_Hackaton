@@ -1,7 +1,7 @@
 maybe_flip {
     dim_in: 2
     dim_out: 2
-    params : 3
+    params : 4
     
     kraus: @maybe_flip
 }
