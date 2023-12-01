@@ -1,19 +1,49 @@
 # This is your source file. You’ll need a main.qhe file for us to compile your code.
 include constants.qh
-#include maybe_flip.py
-#include bitflip_noise.c2q
 include protocols.qhe
 # Define the initial psi state
 increment i to num_qubits
     qubit -> in.[i]
 next
 
+protocol == 0 -> is_no_protocol
 protocol == 1 -> is_protocol_bitflip
 protocol == 2 -> is_protocol_phaseflip
 protocol == 3 -> is_protocol_five_qubit
 
+if is_no_protocol
+    increment j to num_operations
+        j -1 -> i
+        ops.[i] -> op
+        q_is.[i] -> q_i
+        op == 1 -> is_s
+        op == 2 -> is_h
+        op == 3 -> is_t
+        op == 4 -> is_cnot
+        if is_s
+            s[in.[q_i]]
+        end
+        if is_h
+            h[in.[q_i]]
+        end
+        if is_t
+            t[in.[q_i]]
+        end
+        if is_cnot
+            q_js.[i] -> q_j
+            cnot[in.[q_i], in.[q_j]]
+            # Noise
+            maybe_flip(protocol, theta_x, theta_y, theta_z)[in.[q_j]]
+        end
+        # Noise
+        maybe_flip(protocol, theta_x, theta_y, theta_z)[in.[q_i]]
+    next
+end
+
 if is_protocol_bitflip
-    # Copy psi to the 2 ancillary registers
+    # Implementantion of bitflip EC code
+    # Need 3n + 2 physical qubits for n logical ones
+    # Convention: Last 2 are ancillas other 3n encode the logical qubits (0...n-1 are the original ones)
     increment i to num_qubits
         i-1 -> i0
         i+num_qubits-1 -> i1
@@ -38,7 +68,9 @@ if is_protocol_bitflip
 end
 
 if is_protocol_phaseflip
-    # Copy psi to the 2 ancillary registers
+    # Implementantion of phaseflip EC code
+    # Need 3n + 2 physical qubits for n logical ones
+    # Convention: Last 2 are ancillas other 3n encode the logical qubits (0...n-1 are the original ones)
     increment i to num_qubits
         i-1 -> i0
         i+num_qubits-1 -> i1
@@ -68,9 +100,7 @@ end
 if is_protocol_five_qubit
     # Implementantion of 5-qubit EC code
     # Need 5n + 4 physical qubits for n logical ones
-    # Convention: First 4 are ancillas other 5n encode the logical qubits
-    # Setting up the parameters
-    # Initialising qubits
+    # Convention: Last 4 are ancillas other 5n encode the logical qubits (0...n-1 are the original ones)
     increment i to num_qubits
         i-1 -> i0
         i+num_qubits-1 -> i1
@@ -96,7 +126,4 @@ if is_protocol_five_qubit
         end
         gosub five_q_gate
     next
-    # -------------------------------IMPLEMENT BELOW AS SUBROUTINE
-    #Should have 1 input: target qubit
-    #subroutine which performs error correction on target_q logical qubit
 end
