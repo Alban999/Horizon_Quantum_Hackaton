@@ -70,16 +70,40 @@ sub logical_cx
     next
 endsub
 
-sub measure_syndromes
+sub measure_syndromes_msd
     # Extract syndrome for all qubits, should all be 0 to stop the msd protocol
-    0 -> c
-    increment i to n_log_msd
-        increment j to n_ancilla_per_log_msd
-            measure ancilla_array.[n_ancilla_per_log_msd*i + j-1] -> count
-            c + count -> c
-            measure qubit_reg.[j] -> measure_reg.[j]
-        next
-    end
+    # Taken from https://docs.pennylane.ai/projects/catalyst/en/latest/demos/magic_distillation_demo.html
+    cnot[qubit_array_msd.[2], qubit_array_msd.[1]]
+    cz[qubit_array_msd.[2], qubit_array_msd.[1]]
+    cz[qubit_array_msd.[2], qubit_array_msd.[3]]
+    cz[qubit_array_msd.[2], qubit_array_msd.[4]]
+
+    cnot[qubit_array_msd.[3], qubit_array_msd.[1]]
+    cz[qubit_array_msd.[3], qubit_array_msd.[4]]
+    cz[qubit_array_msd.[3], qubit_array_msd.[5]]
+
+    cnot[qubit_array_msd.[4], qubit_array_msd.[1]]
+
+    cnot[qubit_array_msd.[5], qubit_array_msd.[1]]
+    cz[qubit_array_msd.[5], qubit_array_msd.[1]]
+
+    z[qubit_array_msd.[1]]
+    z[qubit_array_msd.[2]]
+    z[qubit_array_msd.[5]]
+
+    h[qubit_array_msd.[2]]
+    h[qubit_array_msd.[3]]
+    h[qubit_array_msd.[4]]
+    h[qubit_array_msd.[5]]
+
+    0 -> syndrome
+    increment i to 4
+        i+1 -> j
+        measure qubit_array_msd.[j] -> m.[i]
+        m.[i] + syndrome -> syndrome
+        if m
+            x[qubit_array_msd.[j]]
+        end
     next
 
 endsub
