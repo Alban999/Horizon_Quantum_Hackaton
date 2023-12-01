@@ -1,0 +1,38 @@
+# Define qubits
+
+increment i to 3
+
+    qubit -> array_qubits.[i]
+
+next
+
+# Define main qubit state (here it is the 0 state)
+
+#x[array_qubits.[1]]
+
+# First part of BF circuit
+increment i to 2
+
+    i + 1 -> j
+    cnot[array_qubits.[1], array_qubits.[j]]
+
+next
+
+# Apply noise effect
+
+# TO DO
+
+# Second part of BF circuit (correction)
+
+increment i to 2
+
+    i + 1 -> j
+    cnot[array_qubits.[1], array_qubits.[j]]
+
+next
+
+# toffoli gate applied with condition
+
+toffoli[array_qubits.[3], array_qubits.[2], array_qubits.[1]]
+
+measure[array_qubits.[1]] -> qubit_1
