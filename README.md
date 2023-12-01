@@ -11,6 +11,8 @@ In the inaugural Horizon Quantum Hackathon, we harnessed Triple Alpha's capabili
 
 The Python script `correct_circuit.py` will execute the API on Horizon Quantum and yield the final register obtained from the backend.
 
+Remark: the `Debug` folder includes our codes for the Magic State Distillation, Bit Flip and 5 Qubits algorithms. All of it is already included in the `Triple_Alpha_Code` folder. We just leave it for information and to debug these algorithms seperatly.
+
 ## Code Overview:
 
 1. **`correct_circuit.py`:** This Python file serves as the user interface, taking 5 input variables:
