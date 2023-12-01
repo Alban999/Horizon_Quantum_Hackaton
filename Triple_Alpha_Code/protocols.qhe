@@ -1,3 +1,34 @@
+sub bitFLipless_gate
+    # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
+    # And let it being affected by some random noise (for bitflip it will be a flip gate only)
+    # Variables op , q_i and q_j should come from outside
+    q_t+0*numb_qubits -> q_i1
+    q_t+1*numb_qubits -> q_i2
+    q_t+2*numb_qubits -> q_i3
+    # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
+    qubit -> anc.[0]
+    qubit -> anc.[1]
+    cnot[out.[q_i1], anc.[0]]
+    cnot[out.[q_i1], anc.[1]]
+    cnot[out.[q_i2], anc.[0]]
+    cnot[out.[q_i3], anc.[1]]
+    measure[anc.[0]] -> anc0
+    measure[anc.[1]] -> anc1
+    if anc0
+        if ~anc1
+            x[out.[q_i3]]           
+        end
+    end
+    if ~anc0
+        if anc1
+            x[out.[q_i2]]        
+        end
+        if ~anc1
+            x[out.[q_i1]]
+        end
+    end
+endsub
+
 # Takes global variable q_t as input, should be defined before calling the routine
 sub five_q_protocol
     #assigning the logical qubit to the physical
@@ -116,37 +147,53 @@ sub five_q_protocol
     end
 endsub
 
-sub bitFLipless_gate
-    # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
-    # And let it being affected by some random noise (for bitflip it will be a flip gate only)
-    # Variables op , q_i and q_j should come from outside
-    q_t+0*numb_qubits -> q_i1
-    q_t+1*numb_qubits -> q_i2
-    q_t+2*numb_qubits -> q_i3
-    # Check parity for any of the numb_qubits qubits by using 2 ancillary qubits at a time
-    qubit -> anc.[0]
-    qubit -> anc.[1]
-    cnot[out.[q_i1], anc.[0]]
-    cnot[out.[q_i1], anc.[1]]
-    cnot[out.[q_i2], anc.[0]]
-    cnot[out.[q_i3], anc.[1]]
-    measure[anc.[0]] -> anc0
-    measure[anc.[1]] -> anc1
-    if anc0
-        if ~anc1
-            x[out.[q_i3]]           
-        end
-    end
-    if ~anc0
-        if anc1
-            x[out.[q_i2]]        
-        end
-        if ~anc1
-            x[out.[q_i1]]
-        end
-    end
-endsub
 
+
+# q_i and q_j need to be defined before subroutine below is used
+# subroutine that applies logical gates for the physical qubits
+sub apply_gates
+    if is_no_protocol 
+        numb_log_2_phys -> 1
+    end
+    if is_protocol_bitflip 
+        numb_log_2_phys -> 3
+    end
+    if is_protocol_phaseflip 
+        numb_log_2_phys -> 3
+    end
+    if is_protocol_five_qubit 
+        numb_log_2_phys -> 5
+    end
+    
+    # Apply gate OP
+    increment i to numb_log_2_phys
+        q_i+(i-1)*numb_qubits -> q_i_temp
+        maybe_flip(noise_model, theta_x, theta_y, theta_z)[in.[q_i_temp]]
+        if is_s
+            s[in.[q_i_temp]]
+        end
+        if is_h
+            h[in.[q_i_temp]]
+        end
+        if is_t
+            t[in.[q_i_temp]]
+        end
+        if is_cnot
+            q_j+(i-1)*numb_qubits -> q_j_temp
+            cnot[in.[q_i_temp], in.[q_j_temp]]
+        end
+    next
+    
+    # Apply noise
+    increment i to numb_log_2_phys
+        q_i+(i-1)*numb_qubits -> q_i_temp
+        maybe_flip(noise_model, theta_x, theta_y, theta_z)[in.[q_i_temp]]
+        if is_cnot
+            q_j+(i-1)*numb_qubits -> q_j_temp
+            maybe_flip(noise_model, theta_x, theta_y, theta_z)[in.[q_j_temp]]
+        end
+    next
+endsub
 
 sub phaseFLipless_gate
     # Now you want to apply one single gate chosen among S, H, T and CX on one (two) qubit(s)
@@ -182,50 +229,4 @@ sub phaseFLipless_gate
             x[out.[q_i1]]
         end
     end
-endsub
-
-# q_i and q_j need to be defined before subroutine below is used
-# subroutine that applies logical gates for the physical qubits
-sub apply_gates
-    if is_no_protocol 
-        numb_log_2_phys -> 1
-    end
-    if is_protocol_bitflip 
-        numb_log_2_phys -> 3
-    end
-    if is_protocol_phaseflip 
-        numb_log_2_phys -> 3
-    end
-    if is_protocol_five_qubit 
-        numb_log_2_phys -> 5
-    end
-    
-    # Apply gate OP
-    increment i to numb_log_2_phys
-        q_i+(i-1)*numb_qubits -> q_i_temp
-        maybe_randomrotation(protocol, theta_x, theta_y, theta_z)[in.[q_i_temp]]
-        if is_s
-            s[in.[q_i_temp]]
-        end
-        if is_h
-            h[in.[q_i_temp]]
-        end
-        if is_t
-            t[in.[q_i_temp]]
-        end
-        if is_cnot
-            q_j+(i-1)*numb_qubits -> q_j_temp
-            cnot[in.[q_i_temp], in.[q_j_temp]]
-        end
-    next
-    
-    # Apply noise
-    increment i to numb_log_2_phys
-        q_i+(i-1)*numb_qubits -> q_i_temp
-        maybe_randomrotation(protocol, theta_x, theta_y, theta_z)[in.[q_i_temp]]
-        if is_cnot
-            q_j+(i-1)*numb_qubits -> q_j_temp
-            maybe_randomrotation(protocol, theta_x, theta_y, theta_z)[in.[q_j_temp]]
-        end
-    next
 endsub
