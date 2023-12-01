@@ -32,7 +32,7 @@ The Python script `correct_circuit.py` will execute the API on Horizon Quantum a
    2. `magic_states.qhe`: Runs another circuit in parallel to create a reservoir of |T> states for teleportation onto the `in` register when a T gate is needed.
    3. `protocols.qhe`: Library of subroutines for the three implemented QEC protocols.
    4. `constants.qh`: Contains fixed variables defined on the IDE [created by the `correct_circuit.py` file]
-   5. `maybe_noise.py`: Single-qubit operation applying noise on the 'in' qubits.
+   5. `maybe_noise.py`: Single-qubit operation applying noise on the `in` qubits.
    6. `standard_gate_set.qis`: Set of operations, containing the new noisy gates called from `maybe_noise.py`.
 
 YOGATES, your solution to mitigating noisy gates in quantum circuits at high level! 🎉
